@@ -164,7 +164,7 @@ if __name__ == "__main__":
     
     dnsdumpster(TARGET['domain'])
     print("") 
-    q = input(f'{Fore.MAGENTA}Do you want to scan for directories? (y/n):{Fore.WHITE} ')
+    q = input(f'{Fore.MAGENTA}Do you want to scan for directories? (y/n):{Fore.WHITE} ') # could take a very long time
     if q == "y":
         print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Scanning for Directories.")
         with open(DIR_SETTINS['directory_list'], encoding="utf-8", errors="ignore") as infile:
@@ -175,7 +175,7 @@ if __name__ == "__main__":
     print("") 
     y = input(f'{Fore.MAGENTA}Do you want to scan for Subdomains? (y/n):{Fore.WHITE} ')
     if y == 'y':
-        print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Scanning for subdomains.")
+        print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Scanning for subdomains.") # could take a very long time
 
         with open(SETTINGS['subdomain_list'], encoding="utf-8", errors="ignore") as infile:
             for line in infile:
