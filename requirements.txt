@@ -1,0 +1,4 @@
+colorama
+requests
+mmh3
+bs4
