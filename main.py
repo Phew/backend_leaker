@@ -14,7 +14,7 @@ BANNER = f'''{Fore.MAGENTA}
 /____/\_,_/\__/_/\_\/___/_//_/\_,_/ /____/\__/\_,_/_/\_\ 
                                                          
 
-                [Oops gotcha backend!]{Fore.RESET}
+                Oops gotcha backend!{Fore.RESET}
 '''
 URL = input(f'{Fore.CYAN}URL{Fore.MAGENTA}# {Fore.RESET}')
 
