@@ -1,4 +1,4 @@
-import sys, os, requests
+import sys, os, requests, ipapi
 from colorama import Fore
 
 #modules
@@ -6,7 +6,7 @@ from modules.url_handling import UrlHandling
 from modules.backend_leaks import BackEnd
 from modules.dnsdumpster import DNSDumpsterAPI
 
-
+os.system('cls')
 BANNER = f'''{Fore.MAGENTA}
    ___           __    ____        __  __            __  
   / _ )___ _____/ /__ / __/__  ___/ / / /  ___ ___ _/ /__
@@ -16,7 +16,7 @@ BANNER = f'''{Fore.MAGENTA}
 
                 Oops gotcha backend!{Fore.RESET}
 '''
-URL = input(f'{Fore.CYAN}URL{Fore.MAGENTA}# {Fore.RESET}')
+URL = input(f'URL --> ')
 
 TARGET = {
     "url": URL,
@@ -127,11 +127,13 @@ if __name__ == "__main__":
     TARGET['domain'] = MainURLHandle.GetDomainFromUrl()
     TARGET['domain_ip'] = MainURLHandle.GetDomainIP()
     TARGET['favicon_hash'] = MainURLHandle.FaviconHash()
-    
+    ip_info = ipapi.location(f'{TARGET["domain_ip"]}')
+    TARGET['ip_org2'] = ip_info['org']
 
     print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} Url: {TARGET['url']}")
     print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} Domain: {TARGET['domain']}")
     print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} Domain IP: {TARGET['domain_ip']}")
+    print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} IP Org: {TARGET['ip_org2']}")
     #print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} Resquest Content: {MainURLHandle.GetReponse()}")
     print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} Favicon Hash: {TARGET['favicon_hash']} (http.favicon.hash:{TARGET['favicon_hash']})")
 
@@ -164,7 +166,7 @@ if __name__ == "__main__":
     
     dnsdumpster(TARGET['domain'])
     print("") 
-    q = input(f'{Fore.MAGENTA}Do you want to scan for directories? (y/n):{Fore.WHITE} ') # could take a very long time
+    q = input(f'{Fore.MAGENTA}Do you want to scan for directories? (y/n):{Fore.WHITE} ')
     if q == "y":
         print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Scanning for Directories.")
         with open(DIR_SETTINS['directory_list'], encoding="utf-8", errors="ignore") as infile:
@@ -175,7 +177,7 @@ if __name__ == "__main__":
     print("") 
     y = input(f'{Fore.MAGENTA}Do you want to scan for Subdomains? (y/n):{Fore.WHITE} ')
     if y == 'y':
-        print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Scanning for subdomains.") # could take a very long time
+        print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Scanning for subdomains.")
 
         with open(SETTINGS['subdomain_list'], encoding="utf-8", errors="ignore") as infile:
             for line in infile:
