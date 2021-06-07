@@ -7,7 +7,7 @@ preferred OS ubuntu/debian, to make sure that the script works in the intended u
 
 ```bash
 requires > python3
-requires > requests, colorama, mmh3, bs4
+requires > requests, colorama, mmh3, bs4, ipapi
 ```
 ```bash
 python3 main.py
