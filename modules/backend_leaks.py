@@ -87,7 +87,7 @@ class BackEnd:
         
         try:
             r = requests.get(REQ_URL)
-            soup = os.system(f"curl {REQ_URL} -s | grep /mailman/subscribe/mailman | cut -c31-110")
+            soup = os.system(f"curl {REQ_URL} -s | findstr POST")
 
             return {
                 "url": REQ_URL,
@@ -104,6 +104,3 @@ class BackEnd:
                 "raw_connection": "not found",
                 "protected_info": "not found"
             }
-
-
-
