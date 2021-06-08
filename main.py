@@ -1,4 +1,6 @@
 import sys, os, requests, ipapi
+
+import colorama
 from colorama import Fore
 
 #modules
@@ -6,17 +8,22 @@ from modules.url_handling import UrlHandling
 from modules.backend_leaks import BackEnd
 from modules.dnsdumpster import DNSDumpsterAPI
 
+
+colorama.init(convert=True)
 os.system('cls')
 BANNER = f'''{Fore.MAGENTA}
-   ___           __    ____        __  __            __  
-  / _ )___ _____/ /__ / __/__  ___/ / / /  ___ ___ _/ /__
- / _  / _ `/ __/  '_// _// _ \/ _  / / /__/ -_) _ `/  '_/
-/____/\_,_/\__/_/\_\/___/_//_/\_,_/ /____/\__/\_,_/_/\_\ 
+   {Fore.MAGENTA}___           __    ____        __ {Fore.RED} __            __  
+  {Fore.MAGENTA}/ _ )___ _____/ /__ / __/__  ___/ / {Fore.RED}/ /  ___ ___ _/ /__   {Fore.YELLOW} - github.com/Phew
+ {Fore.MAGENTA}/ _  / _ `/ __/  '_// _// _ \/ _  / {Fore.RED}/ /__/ -_) _ `/  '_/   {Fore.YELLOW} - github.com/BlackRabbit-0
+{Fore.MAGENTA}/____/\_,_/\__/_/\_\/___/_//_/\_,_/ {Fore.RED}/____/\__/\_,_/_/\_\ 
                                                          
 
-                Oops gotcha backend!{Fore.RESET}
+                {Fore.YELLOW}- Oops gotcha backend!{Fore.RESET}
+                
+                
 '''
-URL = input(f'URL --> ')
+print(BANNER)
+URL = input(f' {Fore.YELLOW}URL {Fore.WHITE}-->{Fore.WHITE} ')
 
 TARGET = {
     "url": URL,
@@ -97,13 +104,19 @@ def dirscanner():
                 #print(f"{Fore.RED}[+]{Fore.WHITE} Encountered error ({subdomain})")
                 pass
             else:
-                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Discovered Directory: {url} ({urlhandle.GetDomainIP()}) ({x.status_code})")
+                bytes = len(UrlHandling(url).GetReponse())
+                if x.status_code == 404:
+                    #print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} This might take awhile")
+                    pass
+                else:
 
-                discovered_directory.append(url)
+                    print(f"\n{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Discovered Directory: {url} ({urlhandle.GetDomainIP()}) ({x.status_code}) ({bytes})")
 
-                with open(f"target_scans/discovered_directorie_{TARGET['domain']}.txt", "w") as f:
-                    for directories in discovered_directory:
-                        print(directories, file=f)
+                    discovered_directory.append(url)
+
+                    with open(f"target_scans/discovered_directorie_{TARGET['domain']}.txt", "w") as f:
+                        for directories in discovered_directory:
+                            print(directories, file=f)
 
 
 if __name__ == "__main__":
@@ -118,7 +131,7 @@ if __name__ == "__main__":
         print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} URL is VALID")
     else:
         print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} URL is not valid to perform backend checks.")
-        sys.exit()
+        exit(0)
 
     print("")
 
@@ -160,6 +173,12 @@ if __name__ == "__main__":
 
     MailmanBackEndResults = BackEndTester.CheckMailman()
     print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Mailman Backend [{MailmanBackEndResults['url']} | {MailmanBackEndResults['return']} | {MailmanBackEndResults['domain_ip']}| {MailmanBackEndResults['raw_connection']}| {MailmanBackEndResults['protected_info']}]")
+    shodan = BackEndTester.shodain()
+    try:
+        #shodan()
+        print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Shodan Backend [{shodan['url']} | {shodan['return']} | {shodan['domain_ip']}| {shodan['raw_connection']}| {shodan['protected_info']}]")
+    except Exception as e:
+        pass
 
     print("") 
     print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Checking DNSDumpster API.")
