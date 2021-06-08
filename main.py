@@ -80,7 +80,7 @@ def subdomain():
                 #print(f"{Fore.RED}[+]{Fore.WHITE} Encountered error ({subdomain})")
                 pass
             else:
-                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Discovered subdomain: {url} ({urlhandle.GetDomainIP()})")
+                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Discovered subdomain: {url} ({urlhandle.GetDomainIP()}) ({r.status_code}) ({bytes})")
 
                 discovered_subdomains.append(url)
 
