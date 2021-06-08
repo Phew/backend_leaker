@@ -1,4 +1,7 @@
-import socket, re, requests, os
+import socket, re, requests, os, subprocess
+
+import shodan
+from shodan import Shodan
 from bs4 import BeautifulSoup
 
 #modules
@@ -13,14 +16,22 @@ class BackEnd:
         UrlHandler = UrlHandling(REQ_URL)
         
         try:
-            requests.get(REQ_URL)
+            cpanel = requests.get(REQ_URL)
+            if cpanel.status_code == 404:
+                return {
+                    "url": REQ_URL,
+                    "return": "error",
+                    "domain_ip": "not found",
+                    "raw_connection": "not found"
+                }
+            else:
 
-            return {
-                "url": REQ_URL,
-                "return": "success",
-                "domain_ip": UrlHandler.GetDomainIP(),
-                "raw_connection": UrlHandler.RawConnection(),
-            }
+                return {
+                    "url": REQ_URL,
+                    "return": "success",
+                    "domain_ip": UrlHandler.GetDomainIP(),
+                    "raw_connection": UrlHandler.RawConnection(),
+                }
         except:
             return {
                 "url": REQ_URL,
@@ -34,13 +45,21 @@ class BackEnd:
         UrlHandler = UrlHandling(REQ_URL)
         
         try:
-            requests.get(REQ_URL)
-            return {
-                "url": REQ_URL,
-                "return": "success",
-                "domain_ip": UrlHandler.GetDomainIP(),
-                "raw_connection": UrlHandler.RawConnection(),
-            }
+            phpmy = requests.get(REQ_URL)
+            if phpmy.status_code == 404:
+                return {
+                    "url": REQ_URL,
+                    "return": "error",
+                    "domain_ip": "not found",
+                    "raw_connection": "not found"
+                }
+            else:
+                return {
+                    "url": REQ_URL,
+                    "return": "success",
+                    "domain_ip": UrlHandler.GetDomainIP(),
+                    "raw_connection": UrlHandler.RawConnection(),
+                }
         except:
             return {
                 "url": REQ_URL,
@@ -59,7 +78,36 @@ class BackEnd:
             "domain_ip": UrlHandler.GetDomainIP(),
             "raw_connection": UrlHandler.RawConnection(),
         }
-    
+
+
+    def shodain(self):
+        REQ_URL = self.target
+        UrlHandler = UrlHandling(REQ_URL)
+        try:
+            API = Shodan("eutNHipEhVtJhBIGdzltWKOgOKOOmxJ6")
+            results = API.search(REQ_URL)
+            for result in results['matches']:
+
+                return {
+                     "url": REQ_URL,
+                        "return": "success",
+                        "domain_ip": UrlHandler.GetDomainIP(),
+                        "raw_connection": UrlHandler.RawConnection(),
+                        "protected_info": result['ip_str']
+                }
+
+        except shodan.APIError as e:
+            return {
+                "url": REQ_URL,
+                "return": "error",
+                "domain_ip": "not found",
+                "raw_connection": "not found",
+                "protected_info": "not found"
+            }
+
+
+
+
     def SSHConnectionBackend(self):
         REQ_URL = self.target
         UrlHandler = UrlHandling(REQ_URL)
@@ -87,15 +135,27 @@ class BackEnd:
         
         try:
             r = requests.get(REQ_URL)
-            soup = os.system(f"curl {REQ_URL} -s | findstr POST")
+            if r.status_code == 404:
 
-            return {
-                "url": REQ_URL,
-                "return": "success",
-                "domain_ip": UrlHandler.GetDomainIP(),
-                "raw_connection": UrlHandler.RawConnection(),
-                "protected_info": soup
-            }
+                return {
+                    "url": REQ_URL,
+                    "return": "error",
+                    "domain_ip": "not found",
+                    "raw_connection": "not found",
+                    "protected_info": "not found"
+                }
+            else:
+
+                soup = subprocess.getoutput(f"curl {REQ_URL} -s | findstr POST").split('"')[1].replace('/mailman/listinfo/mailman', '')
+
+
+                return {
+                    "url": REQ_URL,
+                    "return": "success",
+                    "domain_ip": UrlHandler.GetDomainIP(),
+                    "raw_connection": UrlHandler.RawConnection(),
+                    "protected_info": soup
+                }
         except:
             return {
                 "url": REQ_URL,
