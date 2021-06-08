@@ -175,7 +175,7 @@ if __name__ == "__main__":
     print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Mailman Backend [{MailmanBackEndResults['url']} | {MailmanBackEndResults['return']} | {MailmanBackEndResults['domain_ip']}| {MailmanBackEndResults['raw_connection']}| {MailmanBackEndResults['protected_info']}]")
     shodan = BackEndTester.shodain()
     try:
-        shodan()
+        #shodan()
         print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Shodan Backend [{shodan['url']} | {shodan['return']} | {shodan['domain_ip']}| {shodan['raw_connection']}| {shodan['protected_info']}]")
     except Exception as e:
         pass
