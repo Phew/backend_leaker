@@ -8,7 +8,7 @@ SHOULD WORK WITH WINDOWS 10
 
 ```bash
 requires > python3
-requires > requests, colorama, mmh3, bs4, ipapi
+requires > requests, colorama, mmh3, bs4, ipapi, shodan
 ```
 ```bash
 python3 main.py
