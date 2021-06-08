@@ -1,8 +1,7 @@
 # Work in progress Backend "Leaker"
 
 ## Using the backend leaker
-preferred OS ubuntu/debian, to make sure that the script works in the intended usage.
-SHOULD WORK WITH WINDOWS 10
+Preferred OS debian/windows 10, to make sure that the script works in the intended usage.
 
 ## Usage
 
