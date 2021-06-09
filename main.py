@@ -50,19 +50,20 @@ def dnsdumpster(target):
         for entry in res['dns_records']['host']:
             provider = str(entry['provider'])
             if "Cloudflare" not in provider:
-                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found HOST: {entry['domain']} | {str(entry['provider'])} | {entry['country']}")
+                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found HOST: {entry['domain']} | {str(entry['provider'])} | {entry['ip']} | {entry['country']}")
 
     if res['dns_records']['dns']:
         for entry in res['dns_records']['dns']:
             provider = str(entry['provider'])
             if "Cloudflare" not in provider:
-                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found DNS: {entry['domain']} | {str(entry['provider'])} | {entry['country']}")
+                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found DNS: {entry['domain']} | {str(entry['provider'])} |  {entry['ip']} | {entry['country']}")
 
     if res['dns_records']['mx']:
         for entry in res['dns_records']['mx']:
             provider = str(entry['provider'])
             if "Cloudflare" not in provider:
-                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found MX: {entry['domain']} | {str(entry['provider'])} | {entry['country']}")
+                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found MX: {entry['domain']} | {str(entry['provider'])} | {entry['ip']} | {entry['country']}")
+
 
 def subdomain():
     discovered_subdomains = []
