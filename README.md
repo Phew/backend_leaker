@@ -14,4 +14,7 @@ python3 main.py
 ```
 
 ## Errors
-If the script could not make a folder for the subdomain or directory scanner create a folder called "target_scans"
+If you encounter a error, shoot me a message or create a issue on this repo.
+```bash
+Telegram > https://t.me/ch6rge
+```
