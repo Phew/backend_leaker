@@ -1,9 +1,10 @@
-import sys, os, requests, ipapi
+import sys, os, requests, ipapi, colorama, socket
+import bs4 as BeautifulSoup
 
-import colorama
 from colorama import Fore
 
 #modules
+from modules.banner import *
 from modules.url_handling import UrlHandling
 from modules.backend_leaks import BackEnd
 from modules.dnsdumpster import DNSDumpsterAPI
@@ -11,19 +12,8 @@ from modules.dnsdumpster import DNSDumpsterAPI
 
 colorama.init(convert=True)
 os.system('cls')
-BANNER = f'''{Fore.MAGENTA}
-   {Fore.MAGENTA}___           __    ____        __ {Fore.RED} __            __  
-  {Fore.MAGENTA}/ _ )___ _____/ /__ / __/__  ___/ / {Fore.RED}/ /  ___ ___ _/ /__   {Fore.YELLOW} - github.com/Phew
- {Fore.MAGENTA}/ _  / _ `/ __/  '_// _// _ \/ _  / {Fore.RED}/ /__/ -_) _ `/  '_/   {Fore.YELLOW} - github.com/BlackRabbit-0
-{Fore.MAGENTA}/____/\_,_/\__/_/\_\/___/_//_/\_,_/ {Fore.RED}/____/\__/\_,_/_/\_\ 
-                                                         
-
-                {Fore.YELLOW}- Oops gotcha backend!{Fore.RESET}
-                
-                
-'''
 print(BANNER)
-URL = input(f' {Fore.YELLOW}URL {Fore.WHITE}-->{Fore.WHITE} ')
+URL = input(f' {Fore.CYAN}URL {Fore.WHITE}-->{Fore.WHITE} ')
 
 TARGET = {
     "url": URL,
@@ -32,95 +22,109 @@ TARGET = {
     "favicon_hash": ""
 }
 
-SETTINGS = {
-    "subdomain_list": "lsts/subdomains.txt",
-    "subdomains": []
-}
-
-DIR_SETTINS = {
-    'directory_list': 'lsts/dirs.txt',
-    'dirs': []
-
-}
-
 def dnsdumpster(target):
     res = DNSDumpsterAPI(False).search(target)
 
     if res['dns_records']['host']:
         for entry in res['dns_records']['host']:
-            provider = str(entry['provider'])
-            if "Cloudflare" not in provider:
-                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found HOST: {entry['domain']} | {str(entry['provider'])} | {entry['ip']} | {entry['country']}")
+            provider = str(entry['domain'])
+            if "cloudflare" not in provider or "ddos-guard" not in provider:
+                ip = entry['ip']
+
+                if "172." in ip or "103." in ip or "104." in ip or "23." in ip or "173." in ip:
+                    print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found HOST: {Fore.WHITE}{entry['domain']}{entry['ip']} (CloudFlare)")
+                else:
+                    print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found HOST: {Fore.WHITE}{entry['domain']}{entry['ip']}")
+    else:
+        print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}]0 HOST records found!")
 
     if res['dns_records']['dns']:
         for entry in res['dns_records']['dns']:
-            provider = str(entry['provider'])
-            if "Cloudflare" not in provider:
-                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found DNS: {entry['domain']} | {str(entry['provider'])} |  {entry['ip']} | {entry['country']}")
+            provider = str(entry['domain'])
+            if "cloudflare" not in provider or "ddos-guard" not in provider:
+                ip = entry['ip']
+                if "172." in ip or "103." in ip or "104." in ip or "23." in ip or "173." in ip:
+                    print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found DNS:{Fore.WHITE} {entry['domain']} {entry['ip']} (CloudFlare)")
+                else:
+                    print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found DNS:{Fore.WHITE} {entry['domain']} {entry['ip']}")
+    else:
+        print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}]0 DNS records found!")
 
     if res['dns_records']['mx']:
         for entry in res['dns_records']['mx']:
-            provider = str(entry['provider'])
-            if "Cloudflare" not in provider:
-                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found MX: {entry['domain']} | {str(entry['provider'])} | {entry['ip']} | {entry['country']}")
-
-
-def subdomain():
-    discovered_subdomains = []
-    
-    for subdomain in SETTINGS['subdomains']:
-            url = f"http://{subdomain}.{URL}".replace('https://', '')
-            urlhandle = UrlHandling(url)
-
-            try:
-                requests.get(url)
-            except requests.ConnectionError:
-                #print(f"{Fore.RED}[+]{Fore.WHITE} Connection Error ({subdomain})")
-                pass
-            except Exception as e:
-                #print(f"{Fore.RED}[+]{Fore.WHITE} Encountered error ({subdomain})")
-                pass
-            else:
-                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Discovered subdomain: {url} ({urlhandle.GetDomainIP()}) ({r.status_code}) ({bytes})")
-
-                discovered_subdomains.append(url)
-
-                with open(f"target_scans/discovered_subdomains_{TARGET['domain']}.txt", "w") as f:
-                    for subdomain in discovered_subdomains:
-                        print(subdomain, file=f)
-
-def dirscanner():
-    discovered_directory = []
-    
-    for directories in DIR_SETTINS['dirs']:
-            url = f"http://{URL}/{directories}".replace('https://', '')
-            urlhandle = UrlHandling(url)
-
-            try:
-                x = requests.get(url)
-            except requests.ConnectionError:
-                #print(f"{Fore.RED}[+]{Fore.WHITE} Connection Error ({subdomain})")
-                pass
-            except Exception as e:
-                #print(f"{Fore.RED}[+]{Fore.WHITE} Encountered error ({subdomain})")
-                pass
-            else:
-                bytes = len(UrlHandling(url).GetReponse())
-                if x.status_code == 404:
-                    #print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE} This might take awhile")
-                    pass
+            provider = str(entry['domain'])
+            if "cloudflare" not in provider or "ddos-guard" not in provider:
+                ip = entry['ip']
+                if "172." in ip or "103." in ip or "104." in ip or "23." in ip or "173." in ip:
+                    print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found MX:{Fore.WHITE} {entry['domain']} {entry['ip']} (CloudFlare)")
                 else:
+                    print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Found MX:{Fore.WHITE} {entry['domain']} {entry['ip']}")
 
-                    print(f"\n{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}] {Fore.WHITE}Discovered Directory: {url} ({urlhandle.GetDomainIP()}) ({x.status_code}) ({bytes})")
-
-                    discovered_directory.append(url)
-
-                    with open(f"target_scans/discovered_directorie_{TARGET['domain']}.txt", "w") as f:
-                        for directories in discovered_directory:
-                            print(directories, file=f)
+    else:
+        print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}]0 MX records found!")
 
 
-if __name__ == "__main__":
+def subdomain(URL):
+
+    oop = URL.replace('https:', '').replace('/', '').replace('http:', '').replace('//', '')
+    URL = 'https://www.virustotal.com/vtapi/v2/domain/report'
+    params = {'apikey': "3efa6fc22eb53ade73ed29357896233fb1007d40c354afe0451a607f7157f64b", 'domain': oop}
+
+    response = requests.get(URL, params=params)
+    jdata = response.json()
+
+    domains = sorted(jdata['subdomains'])
+    try:
+        io = jdata['undetected_referrer_samples'][1]['date']
+    except:
+        io = ""
+        pass
+    # print(jdata)
+    for domain in domains:
+        try:
+
+            ip = socket.gethostbyname(domain)
+        except:
+            ip = f"None"
+            pass
+
+
+
+        try:
+            stat = False
+
+            if "172." in ip or "8." in ip or "103." in ip or "104." in ip or "23." in ip or "173." in ip:
+                if "104" in ip:
+                    stat = True
+                stat = True
+
+            if len(io) == 0:
+                io = f"None"
+
+
+            req = requests.get(f"https://{ip}/", timeout=10)
+            soup = BeautifulSoup(req.text, 'html.parser')
+            print(stat)
+            if stat == True:
+                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}]{Fore.WHITE} {domain}, IP: {ip}, ",
+                      f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}]{Fore.WHITE}" + io + f"(CloudFlare/DDoS Prot)")
+            else:
+                oo = 0
+                for title in soup.find_all('title'):
+                    oo = title.get_text()
+                if len(oo) == 0:
+                    print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}]{Fore.WHITE} {domain}, IP: {ip}, {Fore.WHITE}HeaderTitle: empty")
+                else:
+                    print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}]{Fore.WHITE} {domain}, IP: {ip}, {Fore.WHITE}HeaderTitle:{oo}")
+        except:
+           print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}]{Fore.WHITE} {domain}, IP: {ip}, {Fore.WHITE}HeaderTitle: empty (CloudFlare)")
+        if "172." in ip or "8." in ip or "103." in ip or "104." in ip or "23." in ip or "173." in ip:
+
+                print(f"{Fore.GREEN}[{Fore.WHITE}+{Fore.GREEN}]{Fore.WHITE} {domain}, IP: {ip}, {Fore.WHITE}HeaderTitle: empty (CloudFlare/DDoS Prot)")
+
+
+
+def main():
     os.system('cls; clear')
     print(BANNER)
     
@@ -185,27 +189,9 @@ if __name__ == "__main__":
     print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Checking DNSDumpster API.")
     
     dnsdumpster(TARGET['domain'])
-    print("") 
-    q = input(f'{Fore.MAGENTA}Do you want to scan for directories? (y/n):{Fore.WHITE} ')
-    if q == "y":
-        print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Scanning for Directories.")
-        with open(DIR_SETTINS['directory_list'], encoding="utf-8", errors="ignore") as infile:
-            for line in infile:
-                DIR_SETTINS['dirs'].append(line.strip("\n"))
-
-        dirscanner()
-    print("") 
-    y = input(f'{Fore.MAGENTA}Do you want to scan for Subdomains? (y/n):{Fore.WHITE} ')
-    if y == 'y':
-        print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Scanning for subdomains.")
-
-        with open(SETTINGS['subdomain_list'], encoding="utf-8", errors="ignore") as infile:
-            for line in infile:
-                SETTINGS['subdomains'].append(line.strip("\n"))
-
-        subdomain()
+    print("")
+    print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Scanning for subdomains.")
+    subdomain(URL)
 
     print("")
-    print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}Manual Checks.")
-    print(f"{Fore.YELLOW}[{Fore.WHITE}!{Fore.YELLOW}] {Fore.WHITE}ZoomEyE, Shodan, Censys: DOMAIN + FAVICON(http.favicon.hash:HASH).")
-    
+main()
