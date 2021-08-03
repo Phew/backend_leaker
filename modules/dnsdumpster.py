@@ -58,7 +58,7 @@ class DNSDumpsterAPI(object):
 
         cookies = {'csrftoken': csrf_middleware}
         headers = {'Referer': dnsdumpster_url}
-        data = {'csrfmiddlewaretoken': csrf_middleware, 'targetip': domain}
+        data = {'csrfmiddlewaretoken': csrf_middleware, 'targetip': domain, 'user': 'free'}
         req = s.post(dnsdumpster_url, cookies=cookies, data=data, headers=headers)
 
         if req.status_code != 200:
@@ -77,6 +77,7 @@ class DNSDumpsterAPI(object):
         tables = soup.findAll('table')
 
         res = {'domain': domain, 'dns_records': {}}
+
         res['dns_records']['dns'] = self.retrieve_results(tables[0])
         res['dns_records']['mx'] = self.retrieve_results(tables[1])
         res['dns_records']['txt'] = self.retrieve_txt_record(tables[2])
