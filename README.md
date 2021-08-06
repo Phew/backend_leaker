@@ -7,7 +7,7 @@ Preferred OS debian/windows 10, to make sure that the script works in the intend
 
 ```bash
 requires > python3
-requires > requests, colorama, mmh3, bs4, ipapi, shodan, sys, socket. bs4
+requires > requests, colorama, mmh3, bs4, ipapi, shodan, sys, socket, bs4
 ```
 ```bash
 python3 main.py
