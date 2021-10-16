@@ -1,7 +1,10 @@
-# Work in progress Backend "Leaker"
+# Backend Leaker
+<p align="center">
+  <img width="560" height="300" src="https://z.zz.fo/YwCaB.png">
+</p>
 
-## Using the backend leaker
-Made for Windows 10
+## Compatabilty
+Made for Windows 10, should work on any other Operating System. Not intended to use with a VPN enabled
 
 ## Usage
 
